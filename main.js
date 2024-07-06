@@ -32,17 +32,25 @@ async function run() {
         }
     }
 
+    // Click the login button to go to the login page
+    await page.waitForSelector("selector-for-login-button"); // Replace with actual selector
+    await page.click("selector-for-login-button"); // Replace with actual selector
+
     // Perform the login
-    await page.waitForSelector("#loginID");
-    await page.type("#loginID", "kinsu83");
-    await page.type("#loginPW", "kiminsu83!");
-    await page.click("#loginButton");
+    await page.waitForSelector("#membId");
+    await page.type("#membId", "kinsu83");
+    await page.type("#pwd", "kiminsu83!");
+    await page.click("selector-for-login-submit-button"); // Replace with actual selector
 
     // Wait for login to complete and navigate back to the home page
     await page.waitForNavigation();
 
+    // Click on the home logo to return to the home page
+    await page.click("selector-for-home-logo"); // Replace with actual selector
+    await page.waitForNavigation();
+
     // Click on "Issurance of Building Ledger"
-    await page.click("selector-for-issurance-of-building-ledger");
+    await page.click("selector-for-issuance-of-building-ledger"); // Replace with actual selector
 
     // Wait for the input field to be visible and input the address
     await page.waitForSelector("selector-for-address-input");
