@@ -1,5 +1,3 @@
-/** @format */
-
 const puppeteer = require("puppeteer");
 
 async function run() {
@@ -35,46 +33,137 @@ async function run() {
     await page.click(".btnLogin");
 
     // Perform the login
-    await page.waitForSelector("#membId");
-    await page.type("#membId", "kinsu83");
-    await page.type("#pwd", "kiminsu83!");
-    await page.click(".btnLogin");
+    try {
+        console.log("Attempting to type the ID...");
+        await page.waitForSelector("#membId", { visible: true });
+        await page.type("#membId", "hhs0609", { delay: 100 });
+        console.log("ID typed successfully.");
 
-    // Wait for login to complete and navigate back to the home page
-    await page.waitForNavigation();
+        console.log("Attempting to type the password...");
+        await page.waitForSelector("#pwd", { visible: true });
+        await page.type("#pwd", "ch2730053**", { delay: 100 });
+        console.log("Password typed successfully.");
+
+        console.log("Attempting to click the login button...");
+        await page.waitForSelector(".btnLogin", { visible: true });
+
+        // Use evaluate to click the button
+        await page.evaluate(() => {
+            document.querySelector(".btnLogin").click();
+        });
+
+        console.log("Login button clicked successfully.");
+
+        // Wait for login to complete and navigate back to the home page
+        await page.waitForNavigation();
+        console.log("Login successful and navigation completed.");
+    } catch (error) {
+        console.error("Login failed: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
     // Scroll and click on "Insurance of Building Register"
+    console.log("Navigating to 'Insurance of Building Register'...");
     await page.waitForSelector(".bldre1");
     await page.evaluate(() => {
         document.querySelector(".bldre1").scrollIntoView();
     });
     await page.click(".bldre1");
+    console.log("'Insurance of Building Register' clicked.");
 
-    // Wait for the input field to be visible and input the address
-    await page.waitForSelector('input[placeholder="Search address"]'); // Adjust the selector as needed
-    await page.type(
-        'input[placeholder="Search address"]',
-        "경기도 고양시 일산동구 강석로 152 강촌마을아파트 제701동 제2층 제202호 [마두동 796]"
-    );
+    // Click on the "Search by Address" button
+    try {
+        console.log("Attempting to click 'Search by Address' button...");
+        await page.waitForSelector('.btnLotNum', { visible: true });
+        await page.click('.btnLotNum');
+        console.log("'Search by Address' button clicked successfully.");
+    } catch (error) {
+        console.error("Failed to click 'Search by Address' button: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
-    // Click the search button
-    await page.click('button[title="Search"]'); // Adjust the selector as needed
+    // Select address from dropdowns
+    try {
+        console.log("Selecting address from dropdowns...");
+        await page.waitForSelector('select[name="sidoCd"]', { visible: true });
+        await page.select('select[name="sidoCd"]', '경기도');
+        console.log("Selected '경기도'.");
+
+        await page.waitForSelector('select[name="sigunguCd"]', { visible: true });
+        await page.select('select[name="sigunguCd"]', '고양시일산동구');
+        console.log("Selected '고양시일산동구'.");
+
+        await page.waitForSelector('select[name="bjdongCd"]', { visible: true });
+        await page.select('select[name="bjdongCd"]', '마두동');
+        console.log("Selected '마두동'.");
+
+        await page.waitForSelector('select[name="platGbCd"]', { visible: true });
+        await page.select('select[name="platGbCd"]', '대지');
+        console.log("Selected '대지'."); // Adjust this value as needed
+
+        // Enter the detailed address number
+        await page.type('input[name="mnnm"]', '796');
+        console.log("Entered detailed address number '796'.");
+
+        // Click the view button
+        await page.click('.btnNext');
+        console.log("Clicked 'View' button.");
+    } catch (error) {
+        console.error("Failed to select address or click 'View' button: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
     // Wait for the results to be visible
-    await page.waitForSelector(".result-item"); // Adjust the selector as needed
+    try {
+        console.log("Waiting for the results to be visible...");
+        await page.waitForSelector(".result-item", { visible: true }); // Adjust the selector as needed
+        console.log("Results are visible.");
+    } catch (error) {
+        console.error("Failed to find results: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
     // Click on the result item to view details
-    await page.click(".result-item"); // Adjust the selector as needed
+    try {
+        console.log("Clicking on the result item...");
+        await page.click(".result-item"); // Adjust the selector as needed
+        console.log("Result item clicked.");
+    } catch (error) {
+        console.error("Failed to click on the result item: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
     // Wait for the PDF download button to be visible and click it
-    await page.waitForSelector('button[title="Download PDF"]'); // Adjust the selector as needed
-    await page.click('button[title="Download PDF"]');
+    try {
+        console.log("Waiting for the PDF download button to be visible...");
+        await page.waitForSelector('button[title="Download PDF"]', { visible: true }); // Adjust the selector as needed
+        await page.click('button[title="Download PDF"]');
+        console.log("PDF download button clicked.");
+    } catch (error) {
+        console.error("Failed to click the PDF download button: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
     // Wait for the download to start and complete
-    await page.waitForSelector(".download-complete", { timeout: 30000 }); // Adjust the selector as needed
+    try {
+        console.log("Waiting for the download to complete...");
+        await page.waitForSelector(".download-complete", { timeout: 30000 }); // Adjust the selector as needed
+        console.log("Download complete.");
+    } catch (error) {
+        console.error("Download failed: ", error.message);
+        await browser.close();
+        process.exit(1);
+    }
 
     // Close the browser
     await browser.close();
+    console.log("Browser closed.");
 }
 
 run().catch((error) => {
