@@ -13,6 +13,13 @@ async function run() {
     while (attempts < maxRetries && !success) {
         try {
             await page.goto("https://cloud.eais.go.kr/", { timeout: 60000 });
+
+            // Handle popup by waiting for it and then closing it
+            await page.waitForSelector("selector-for-popup-close-button", {
+                timeout: 10000,
+            }); // Replace with actual selector
+            await page.click("selector-for-popup-close-button"); // Replace with actual selector
+
             success = true;
         } catch (error) {
             console.error(`Attempt ${attempts + 1} failed: ${error.message}`);
